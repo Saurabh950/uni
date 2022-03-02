@@ -123,7 +123,7 @@ class Online_admission_model extends MY_Model
         return $studentData;
     }
 
-    public function getOnlineAdmission($class_id = '', $branch_id = '')
+    public function getOnlineAdmission($class_id = '', $branch_id = '', $role_id = '')
     {
         $this->db->select('oa.*,c.name as class_name,se.name as section_name');
         $this->db->from('online_admission as oa');
@@ -131,7 +131,10 @@ class Online_admission_model extends MY_Model
         $this->db->join('section as se', 'oa.section_id = se.id', 'left');
         $this->db->where('oa.class_id', $class_id);
         $this->db->where('oa.branch_id', $branch_id);
-        $this->db->order_by('oa.id', 'ASC');
+        if($role_id == 9){
+            $this->db->where('oa.agent_id', $this->session->userdata('loggedin_userid'));
+        }
+        $this->db->order_by('oa.id', 'DESC');
         $query = $this->db->get();
         return $query->result_array();
     }
@@ -152,5 +155,16 @@ class Online_admission_model extends MY_Model
         }
 
         return ($prefix . $maxNum);
+    }
+
+    public function get_admission_detail($id="")
+    {
+        $this->db->select('online_admission.*, branch.name as branch_name');
+        $this->db->from('online_admission');
+        $this->db->join('branch', 'branch.id = online_admission.branch_id');
+        $this->db->where('online_admission.id',$id);
+        $result = $this->db->get()->result_array()[0];
+        // pre($result);
+        return $result;
     }
 }

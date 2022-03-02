@@ -12,7 +12,7 @@ class Application_model extends CI_Model
 
     public function get_branch_id()
     {
-        if (is_superadmin_loggedin()) {
+        if (is_superadmin_loggedin() || $this->session->userdata('loggedin_role_id') == 9) {
             return $this->input->post('branch_id');
         } else {
             return get_loggedin_branch_id();

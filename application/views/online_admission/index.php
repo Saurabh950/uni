@@ -1,7 +1,6 @@
-<?php $widget = (is_superadmin_loggedin() ? "col-md-6" : "col-md-offset-3 col-md-6"); ?>
+<?php $widget = (is_superadmin_loggedin() ? "col-md-6" : "col-md-6"); ?>
 <div class="row">
 	<div class="col-md-12">
-		<?php if($this->session->userdata('loggedin_role_id') != 9){?>
 		<section class="panel">
 			<header class="panel-heading">
 				<h4 class="panel-title"><?=translate('select_ground')?></h4>
@@ -9,7 +8,7 @@
 			<?php echo form_open($this->uri->uri_string(), array('class' => 'validate'));?>
 			<div class="panel-body">
 				<div class="row mb-sm">
-				<?php if (is_superadmin_loggedin() ): ?>
+				<?php //if (is_superadmin_loggedin() ): ?>
 					<div class="col-md-6">
 						<div class="form-group">
 							<label class="control-label"><?=translate('branch')?> <span class="required">*</span></label>
@@ -20,7 +19,7 @@
 							?>
 						</div>
 					</div>
-				<?php endif; ?>
+				<?php //endif; ?>
 					<div class="<?php echo $widget; ?> mb-sm">
 						<div class="form-group">
 							<label class="control-label"><?=translate('class')?> <span class="required">*</span></label>
@@ -42,8 +41,7 @@
 			</footer>
 			<?php echo form_close();?>
 		</section>
-		<?php }
-		if (isset($students)):?>
+		<?php if (isset($students)):?>
 		<section class="panel appear-animation" data-appear-animation="<?=$global_config['animations'] ?>" data-appear-animation-delay="100">
 			<header class="panel-heading">
 				<h4 class="panel-title"><i class="fas fa-user-graduate"></i> <?php echo translate('online_admission') . " " . translate('list');?></h4>
@@ -102,7 +100,13 @@
 							</td>
 							<td><?php echo _d($row['apply_date']) . " " . date("h:m A", strtotime($row['apply_date']));?></td>
 							<td class="min-w-lg">
-							<?php if ($row['status']  != 2 && get_permission('online_admission', 'is_add')) { ?>
+							<?php if (get_permission('online_admission', 'is_view')) { ?>
+								<a href="<?php echo base_url('online_admission/show/' . $row['id']);?>" class="btn btn-default btn-circle icon" data-toggle="tooltip"
+								data-original-title="<?=translate('details')?>">
+									<i class="far fa-arrow-alt-circle-right"></i>
+								</a>								
+							<?php }
+							if ($row['status']  != 2 && get_permission('online_admission', 'is_add')) { ?>
 								<a href="<?php echo base_url('online_admission/approved/' . $row['id']);?>" class="btn btn-success btn-circle icon" data-toggle="tooltip"
 								data-original-title="<?=translate('approved')?>">
 									<i class="far fa-check-circle"></i>

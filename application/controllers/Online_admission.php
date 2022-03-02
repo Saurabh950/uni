@@ -30,24 +30,13 @@ class Online_admission extends Admin_Controller
             access_denied();
         }
 
-        if($this->session->userdata('loggedin_role_id') != 9){
-            $branchID = $this->application_model->get_branch_id();
-            if (isset($_POST['search'])) {
-                $classID = $this->input->post('class_id');
-                $sectionID = $this->input->post('section_id');
-                $this->data['students'] = $this->online_admission_model->getOnlineAdmission('', $branchID);
-            }
-            $this->data['branch_id'] = $branchID;
-        }else{
-            $this->db->select('oa.*,c.name as class_name,se.name as section_name');
-            $this->db->from('online_admission as oa');
-            $this->db->join('class as c', 'oa.class_id = c.id', 'left');
-            $this->db->join('section as se', 'oa.section_id = se.id', 'left');
-            $this->db->where('oa.agent_id', $this->session->userdata('loggedin_userid'));
-            $this->db->order_by('oa.id', 'DESC');
-            $query = $this->db->get();
-            $this->data['students'] = $query->result_array();   
+        $branchID = $this->application_model->get_branch_id();
+        if (isset($_POST['search'])) {
+            $classID = $this->input->post('class_id');
+            $sectionID = $this->input->post('section_id');
+            $this->data['students'] = $this->online_admission_model->getOnlineAdmission($classID, $branchID, $this->session->userdata('loggedin_role_id'));
         }
+        $this->data['branch_id'] = $branchID;        
         $this->data['title'] = translate('student_list');
         $this->data['main_menu'] = 'admission';
         $this->data['sub_page'] = 'online_admission/index';
@@ -305,5 +294,15 @@ class Online_admission extends Admin_Controller
             $this->form_validation->set_message("unique_registerid", translate('already_taken'));
             return false;
         }
+    }
+
+    public function show($id='')
+    {
+        $user_id = $this->session->userdata('loggedin_userid');
+        $this->data['admission_details'] = $this->online_admission_model->get_admission_detail($id);
+        $this->data['title'] = translate('online admission');
+        $this->data['sub_page'] = 'online_admission/show';
+        $this->data['main_menu'] = 'Online Admission';
+        $this->load->view('layout/index', $this->data);
     }
 }
